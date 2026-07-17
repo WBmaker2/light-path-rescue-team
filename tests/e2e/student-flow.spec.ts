@@ -29,7 +29,7 @@ async function enterActivities(page: Page) {
 
 async function completeActivity(page: Page, choices: readonly [string, string, string], isLast: boolean) {
   await page.getByLabel(choices[0], { exact: true }).check();
-  await page.getByLabel(choices[1], { exact: true }).check();
+  await page.getByLabel(choices[1]).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
   await expect(page.getByRole("heading", { name: "빛길 순서" })).toBeVisible();
   await page.getByLabel(choices[2], { exact: true }).check();

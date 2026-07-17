@@ -40,11 +40,14 @@ export type TraceResult = {
 };
 
 export type Choice = { id: string; label: string; detail?: string; matchingSetupIds?: string[] };
+export type SceneGuideItem = { label: string; hint: string };
 
 export type MissionDefinition = {
   id: MissionId;
   title: string;
   request: string;
+  conceptHelp: string;
+  sceneGuide: readonly SceneGuideItem[];
   property: "빛이 있어야 보여요" | "직진" | "반사" | "굴절" | "장치 쓰임";
   setupLabel: string;
   setups: Choice[];

@@ -2,14 +2,6 @@ import type { MissionDefinition, MirrorOrientation, TraceEvent, TraceResult } fr
 
 type SceneProps = { mission: MissionDefinition; trace: TraceResult | null; setupId: string | null; visibleSegments: number };
 const statusText = { "target-hit": "표적에 도착", blocked: "장애물에서 멈춤", "mirror-back": "거울 뒷면에 닿음", "out-of-bounds": "다른 방향으로 나감", "focus-before-target": "표적보다 앞에 모임", "focus-after-target": "표적보다 뒤에 모임" };
-const sceneKeyItems: Record<MissionDefinition["id"], readonly [string, string, string]> = {
-  "light-needed-to-see": ["광원", "파란 블록", "관찰창"],
-  "straight-corridor": ["광원", "가림판 구멍", "표적"],
-  "single-mirror-corner": ["광원", "거울 슬롯", "표지판"],
-  "two-mirror-viewing-shaft": ["위쪽 물체", "거울 A·B 슬롯", "아래 관찰창"],
-  "convex-lens-focus": ["평행한 세 가상 빛줄기", "렌즈 슬롯", "표적"],
-  "device-use-match": ["잠망경", "돋보기", "카메라"],
-};
 
 function Barrier({ x, gapY, name }: { x: number; gapY: number; name: "first" | "second" }) {
   return <><rect x={x} y="120" width="32" height={gapY - 150} className={`slot-wall ${name}-wall`}/><rect x={x} y={gapY + 30} width="32" height={450 - gapY} className={`slot-wall ${name}-wall`}/></>;
@@ -46,7 +38,6 @@ function StaticScene({ mission, setupId }: Pick<SceneProps, "mission" | "setupId
 
 export function LightPathScene({ mission, trace, setupId, visibleSegments }: SceneProps) {
   const overlays = trace?.events.filter((item) => item.kind === "mirror" || item.kind === "lens" || item.kind === "block") ?? [];
-  const sceneKey = mission.id === "light-needed-to-see" && setupId === "dark" ? ["꺼진 광원", "파란 블록", "관찰창"] : sceneKeyItems[mission.id];
   const statusLabel = trace?.segments.length === 0 ? "빛길이 시작되지 않음" : trace ? statusText[trace.status] : "";
-  return <figure className="scene-card" aria-labelledby="scene-caption"><svg className="light-scene" viewBox="0 0 1000 600" role="img" aria-labelledby="scene-title scene-description"><title id="scene-title">{mission.title} 가상 빛길 장면</title><desc id="scene-description">{trace ? trace.summary : "고정 장면의 핵심 요소를 먼저 살펴본 뒤 빛길을 확인할 수 있습니다."}</desc><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ffd84d" /></marker></defs><rect x="20" y="20" width="960" height="560" rx="26" className="scene-bg" /><path d="M 85 535 H 915" className="floor" /><StaticScene mission={mission} setupId={setupId} />{trace?.segments.slice(0, visibleSegments).map((segment) => <path key={segment.label} d={`M ${segment.from.x} ${segment.from.y} L ${segment.to.x} ${segment.to.y}`} className="light-ray" markerEnd="url(#arrow)"><title>{segment.label}</title></path>)}{overlays.map((item) => <SceneObject key={`${item.id}-overlay`} item={item} />)}</svg><figcaption id="scene-caption"><strong>가상 빛길 작업대</strong>{trace ? <span className={`status ${trace.status}`}>{statusLabel} · {trace.summary}</span> : <span>화면의 선은 실제 빛 자체가 아닌 진행 방향 표시예요.</span>}<ul className="scene-key" aria-label="장면에서 먼저 찾기">{sceneKey.map((item) => <li key={item}><strong>{item}</strong>: 장면에서 찾아봐요.</li>)}</ul></figcaption></figure>;
+  return <figure className="scene-card" aria-labelledby="scene-caption"><svg className="light-scene" viewBox="0 0 1000 600" role="img" aria-labelledby="scene-title scene-description"><title id="scene-title">{mission.title} 가상 빛길 장면</title><desc id="scene-description">{trace ? trace.summary : "고정 장면의 핵심 요소를 먼저 살펴본 뒤 빛길을 확인할 수 있습니다."}</desc><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ffd84d" /></marker></defs><rect x="20" y="20" width="960" height="560" rx="26" className="scene-bg" /><path d="M 85 535 H 915" className="floor" /><StaticScene mission={mission} setupId={setupId} />{trace?.segments.slice(0, visibleSegments).map((segment) => <path key={segment.label} d={`M ${segment.from.x} ${segment.from.y} L ${segment.to.x} ${segment.to.y}`} className="light-ray" markerEnd="url(#arrow)"><title>{segment.label}</title></path>)}{overlays.map((item) => <SceneObject key={`${item.id}-overlay`} item={item} />)}</svg><figcaption id="scene-caption"><strong>빛길 그림</strong>{trace ? <span className={`status ${trace.status}`}>{statusLabel} · {trace.summary}</span> : <span>화면의 선은 실제 빛 자체가 아닌 진행 방향 표시예요.</span>}<ul className="scene-key" aria-label="그림에서 살펴볼 점">{mission.sceneGuide.map((item) => <li key={item.label}><strong>{item.label}</strong><span>{item.hint}</span></li>)}</ul></figcaption></figure>;
 }

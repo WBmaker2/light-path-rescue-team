@@ -50,6 +50,25 @@ test("student completes the guide and five missions with a five-mission summary"
   await expect(list).not.toContainText("빛이 있어야 보여요");
 });
 
+test("시작과 안전 안내는 쉬운 학생 문구를 쓴다", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("화면의 빛길", { exact: false })).toBeVisible();
+  await expect(page.getByText("본 것을 설명하기", { exact: false })).toBeVisible();
+
+  await beginSafety(page);
+  await expect(page.getByRole("heading", { name: "이 화면에서 볼 수 있는 것" })).toBeVisible();
+  await expect(page.getByText("이 화면은 나란히 들어오는 세 빛줄기가 모이는 장면만 보여 줘요.")).toBeVisible();
+
+  await page.getByRole("button", { name: "확인했어요" }).click();
+  await page.getByLabel(successfulActivities[0][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  await expect(page.locator(".comparison")).toHaveText("예상과 관찰이 같았어요. 빛이 멈추거나 방향을 바꾼 곳을 찾아 설명해 봐요.");
+  await page.getByLabel("광원이 꺼진 장면", { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  await expect(page.locator(".comparison")).toHaveText("예상과 관찰이 달랐어요. 빛이 멈추거나 방향을 바꾼 곳을 보고 다시 생각해 봐요.");
+});
+
 test("information dialog traps focus, closes with Escape, and restores its trigger", async ({ page }) => {
   await page.goto("/");
   await beginSafety(page);

@@ -7,8 +7,18 @@ test("one guide and five missions carry required model and safety language", () 
   assert.deepEqual(MISSIONS.map((mission) => mission.id), [
     "light-needed-to-see", "straight-corridor", "single-mirror-corner", "two-mirror-viewing-shaft", "convex-lens-focus", "device-use-match",
   ]);
-  assert.ok(MISSIONS.every((mission) => mission.modelNote.includes("가상")));
+  assert.ok(MISSIONS.filter((mission) => mission.id !== "convex-lens-focus").every((mission) => mission.modelNote.includes("가상")));
   assert.ok(MISSIONS.some((mission) => mission.safetyNote.includes("햇빛")));
+});
+
+test("student wording uses agreed easy labels", () => {
+  const guide = MISSIONS.find((mission) => mission.id === "light-needed-to-see");
+  const lens = MISSIONS.find((mission) => mission.id === "convex-lens-focus");
+  const device = MISSIONS.find((mission) => mission.id === "device-use-match");
+
+  assert.equal(guide?.setupLabel, "관찰할 장면");
+  assert.equal(lens?.modelNote, "이 화면은 나란히 들어오는 세 빛줄기가 모이는 장면만 보여 줘요.");
+  assert.equal(device?.conceptHelp, "장치의 쓰임을 보면 거울이나 렌즈가 어디에 쓰였는지 알 수 있어요.");
 });
 
 test("mirror setup labels use arrows that match their actual orientations", () => {

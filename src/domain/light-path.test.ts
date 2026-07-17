@@ -31,6 +31,13 @@ test("mirror and lens missions return stable success and repair feedback", () =>
   assert.equal(getTrace("convex-lens-focus", "middle").segments.length, 6);
 });
 
+test("lens success uses a student-friendly summary", () => {
+  assert.equal(
+    getTrace("convex-lens-focus", "middle").summary,
+    "나란히 들어온 세 빛줄기가 표적 위치에서 모였어요.",
+  );
+});
+
 test("correct device match gives each device its own relationship segment", () => {
   const result = getTrace("device-use-match", "correct-match");
   assert.deepEqual(result.segments.map((segment) => segment.label), [

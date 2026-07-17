@@ -7,7 +7,7 @@ const safety = "실제 거울과 렌즈 실험은 선생님의 안내에 따라 
 export const MISSIONS: MissionDefinition[] = [
   {
     id: "light-needed-to-see", title: "안내 활동 · 빛이 있어야 보여요", property: "빛이 있어야 보여요",
-    request: "관찰창에서 파란 블록을 볼 수 있는 장면을 골라요.", setupLabel: "관찰함 장면",
+    request: "관찰창에서 파란 블록을 볼 수 있는 장면을 골라요.", setupLabel: "관찰할 장면",
     conceptHelp: "빛이 물체에 닿고 관찰창까지 이어져야 물체가 보여요.",
     sceneGuide: [{ label: "광원", hint: "빛이 시작하는 곳이에요." }, { label: "파란 블록", hint: "빛이 닿아야 보이는 물체예요." }, { label: "관찰창", hint: "빛이 이어지는 마지막 곳이에요." }],
     setups: [{ id: "dark", label: "광원이 꺼져 있어요" }, { id: "blocked", label: "빛이 블록 앞에서 막혀요" }, { id: "visible", label: "빛이 블록과 관찰창까지 이어져요" }],
@@ -53,12 +53,12 @@ export const MISSIONS: MissionDefinition[] = [
     setups: [{ id: "left", label: "렌즈를 왼쪽 슬롯에 놓기" }, { id: "middle", label: "렌즈를 가운데 슬롯에 놓기" }, { id: "right", label: "렌즈를 오른쪽 슬롯에 놓기" }],
     predictions: [{ id: "focus", label: "렌즈 뒤에서 빛이 모일 거예요", matchingSetupIds: ["left", "middle", "right"] }, { id: "parallel", label: "그대로 평행할 거예요" }, { id: "mirror", label: "거울처럼 한쪽으로 꺾일 거예요" }],
     explanations: [{ id: "lens", label: "볼록렌즈에서 평행한 빛이 모이는 방향으로 바뀌어 표적 위치에 모였어요." }, { id: "mirror", label: "렌즈가 거울처럼 빛을 튕겨 냈어요." }, { id: "all", label: "모든 빛은 어떤 렌즈에서도 한 점에 모여요." }],
-    correctExplanationId: "lens", successSetup: "middle", modelNote: "볼록렌즈 장면은 평행하게 들어오는 빛이 모이는 경우만 보여 주는 제한된 가상 모형이에요.", safetyNote: safety,
+    correctExplanationId: "lens", successSetup: "middle", modelNote: "이 화면은 나란히 들어오는 세 빛줄기가 모이는 장면만 보여 줘요.", safetyNote: safety,
   },
   {
     id: "device-use-match", title: "미션 5 · 장치 역할 연결실", property: "장치 쓰임",
     request: "잠망경·돋보기·카메라의 거울과 렌즈 역할을 한 번에 연결해요.", setupLabel: "세 장치의 역할 고르기",
-    conceptHelp: "장치 쓰임은 거울이나 렌즈의 성질을 이용하는 방법이에요.",
+    conceptHelp: "장치의 쓰임을 보면 거울이나 렌즈가 어디에 쓰였는지 알 수 있어요.",
     sceneGuide: [{ label: "잠망경", hint: "선택 뒤 거울 역할을 확인해요." }, { label: "돋보기", hint: "선택 뒤 렌즈 역할을 확인해요." }, { label: "카메라", hint: "선택 뒤 렌즈 역할을 확인해요." }],
     setups: [{ id: "correct-match", label: "잠망경: 평면거울 반사 · 돋보기/카메라: 볼록렌즈 굴절" }, { id: "all-mirror", label: "세 장치 모두를 평면거울 반사로 연결" }, { id: "all-lens", label: "세 장치 모두를 볼록렌즈 굴절로 연결" }],
     predictions: [{ id: "uses", label: "장치마다 쓰는 빛의 성질이 다를 거예요", matchingSetupIds: ["correct-match"] }, { id: "same", label: "모든 장치가 같은 방식일 거예요" }, { id: "none", label: "빛의 성질과 관계없을 거예요" }],

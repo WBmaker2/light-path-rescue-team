@@ -40,3 +40,19 @@
 명령: `node --import tsx --test src/components/LightPathScene.test.tsx src/content/missions.test.ts && npm run build`
 
 결과: 관련 테스트 5개와 빌드가 모두 통과했습니다. 빌드의 Node `punycode` 사용 중단 경고와 Vinext 정적 분류 안내는 비차단 상태입니다.
+
+## 두 번째 리뷰 수정 · dark 장면 안내
+
+### RED
+
+명령: `node --import tsx --test src/components/LightPathScene.test.tsx`
+
+결과: `setupId === "dark"` 렌더링에서 SVG는 `꺼진 광원`을 보이지만 그림 안내에는 일반 `광원`이 남아 있어 새 회귀 테스트가 실패했습니다.
+
+### 구현과 GREEN
+
+`LightPathScene`에서 안내 활동의 dark 상태일 때 첫 `sceneGuide` 항목만 `꺼진 광원`으로 바꾸고 나머지 안내는 유지했습니다.
+
+명령: `node --import tsx --test src/components/LightPathScene.test.tsx && npm run build`
+
+결과: 그림 안내 테스트 2개와 프로덕션 빌드가 통과했습니다. 빌드의 Node `punycode` 경고와 Vinext 정적 분류 안내는 비차단 상태입니다.

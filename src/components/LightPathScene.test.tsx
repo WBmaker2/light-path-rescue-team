@@ -8,3 +8,9 @@ test("scene guide separates a label and hint with a readable colon", () => {
   const markup = renderToStaticMarkup(<LightPathScene mission={getMission("light-needed-to-see")} trace={null} setupId={null} visibleSegments={0} />);
   assert.match(markup, /<strong>광원<\/strong>: <span>빛이 시작하는 곳이에요\.<\/span>/);
 });
+
+test("dark guide names the switched-off light source", () => {
+  const markup = renderToStaticMarkup(<LightPathScene mission={getMission("light-needed-to-see")} trace={null} setupId="dark" visibleSegments={0} />);
+  assert.match(markup, /<strong>꺼진 광원<\/strong>: <span>빛이 시작하는 곳이에요\.<\/span>/);
+  assert.doesNotMatch(markup, /<strong>광원<\/strong>/);
+});

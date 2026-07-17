@@ -241,7 +241,7 @@ Expected: 외부 런타임 요청 없음, exit code 0.
 
 1200px 및 320px에서 같은 미션 화면을 캡처하고 장면 우선 순서, 장면 안내, 헤더, 경로표 진행 상태를 비교한다.
 
-- [ ] **Step 5: 커밋·Sites 배포 검증**
+- [x] **Step 5: 커밋·Sites 배포 검증**
 
 정확히 검증한 커밋 SHA를 Sites 소스 저장소에 push하고 새 버전을 저장·비공개 배포한 뒤 배포 상태가 `succeeded`인지 확인한다.
 
@@ -327,3 +327,4 @@ Expected: 외부 런타임 요청 없음, exit code 0.
 - 꺼진 광원은 `segments=[]`, `.source-off`, 0구간 기록으로 처리해 그림·배지·텍스트가 같은 관찰을 설명한다.
 - 예상-선택 54개 조합, 6개 활동 장면 안내, 렌즈 6구간, 양쪽 반응형 순서와 실제 본문 포커스를 자동 검증한다.
 - 최종 독립 재리뷰 결과 Critical, Important, Minor 미해결 항목은 없다.
+- Sites 비공개 배포가 `succeeded`로 확인되었으며 배포 주소는 `https://light-path-rescue-team.wbmaker.chatgpt.site`이다.

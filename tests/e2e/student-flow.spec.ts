@@ -31,7 +31,7 @@ async function completeActivity(page: Page, choices: readonly [string, string, s
   await page.getByLabel(choices[0], { exact: true }).check();
   await page.getByLabel(choices[1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
-  await expect(page.getByText("관찰 기록 · 텍스트 경로표")).toBeVisible();
+  await expect(page.getByText("빛길 순서")).toBeVisible();
   await page.getByLabel(choices[2], { exact: true }).check();
   await page.getByRole("button", { name: isLast ? "관찰 기록 보기" : "다음 활동으로" }).click();
 }
@@ -76,7 +76,7 @@ test("mobile layout avoids horizontal overflow and keeps the primary button visi
   await page.getByRole("button", { name: "빛길 확인" }).click();
   await expect(page.getByRole("button", { name: "빛길 확인" })).toBeVisible();
   await expect(page.getByRole("button", { name: "한 단계씩" })).toBeVisible();
-  await expect(page.getByText("관찰 기록 · 텍스트 경로표")).toBeVisible();
+  await expect(page.getByText("빛길 순서")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
@@ -147,6 +147,33 @@ test("마지막 종합 미션은 확인 전 장치 역할을 숨긴다", async (
   await expect(page.locator(".trace-record")).toContainText("잠망경 → 평면거울 → 반사");
   await expect(page.locator(".trace-record")).toContainText("돋보기 → 볼록렌즈 → 굴절");
   await expect(page.locator(".trace-record")).toContainText("카메라 → 볼록렌즈 → 굴절");
+});
+
+test("다시 시작은 마지막 미션의 선택과 기록을 모두 지운다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  for (const [index, choices] of successfulActivities.entries()) await completeActivity(page, choices, index === successfulActivities.length - 1);
+
+  await page.getByRole("button", { name: "처음부터 다시 살펴보기" }).click();
+  await enterActivities(page);
+  await expect(page.getByRole("button", { name: "빛길 확인" })).toBeDisabled();
+  await expect(page.getByRole("region", { name: "빛길 순서" })).toHaveCount(0);
+  await expect(page.getByText("세 장치와 빛의 성질을 알맞게 연결했어요.")).toHaveCount(0);
+});
+
+test("모바일 관찰은 결과 그림에 초점을 맞추고 기록 링크를 보여 준다", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/");
+  await enterActivities(page);
+  await page.getByLabel(successfulActivities[0][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+
+  const scene = page.locator("figure.scene-card");
+  await expect(scene).toBeFocused();
+  await expect.poll(async () => (await scene.boundingBox())?.y ?? -1).toBeGreaterThanOrEqual(0);
+  await expect.poll(async () => (await scene.boundingBox())?.y ?? 720).toBeLessThan(720);
+  await expect(scene.getByRole("link", { name: "빛길 기록으로 가기" })).toBeVisible();
 });
 
 test("모든 장면 안내와 화면 순서가 미션별 장면을 그대로 설명한다", async ({ page }) => {

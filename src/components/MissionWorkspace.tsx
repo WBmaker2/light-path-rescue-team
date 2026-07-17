@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MISSIONS, getMission } from "../content/missions";
+import { MISSIONS } from "../content/missions";
 import { getTrace } from "../domain/light-path";
 import { predictionMatchesObservation } from "../domain/prediction";
-import type { MissionId, TraceResult } from "../domain/types";
+import type { TraceResult } from "../domain/types";
 import { LightPathScene } from "./LightPathScene";
 import { SessionSummary, type MissionRecord } from "./SessionSummary";
 
@@ -23,7 +23,7 @@ export function MissionWorkspace({ onCompletedChange }: WorkspaceProps) {
   const [feedback, setFeedback] = useState("");
   const [records, setRecords] = useState<MissionRecord[]>([]);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const sceneRef = useRef<HTMLFigureElement>(null);
+  const sceneRef = useRef<HTMLElement>(null);
   const mission = MISSIONS[index];
   const predictionChoice = mission.predictions.find((choice) => choice.id === prediction);
   const setupChoice = mission.setups.find((choice) => choice.id === setup);

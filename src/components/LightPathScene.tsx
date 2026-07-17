@@ -45,7 +45,7 @@ function StaticScene({ mission, setupId, trace }: Pick<SceneProps, "mission" | "
   return <><DeviceCard x={80} title="잠망경" role={roles[0]} /><DeviceCard x={395} title="돋보기" role={roles[1]} /><DeviceCard x={710} title="카메라" role={roles[2]} /></>;
 }
 
-export const LightPathScene = forwardRef<HTMLFigureElement, SceneProps>(function LightPathScene({ mission, trace, setupId, visibleSegments }, ref) {
+export const LightPathScene = forwardRef<HTMLElement, SceneProps>(function LightPathScene({ mission, trace, setupId, visibleSegments }, ref) {
   const overlays = trace?.events.filter((item) => item.kind === "mirror" || item.kind === "lens" || item.kind === "block") ?? [];
   const sceneGuide = mission.id === "light-needed-to-see" && setupId === "dark" ? mission.sceneGuide.map((item, index) => index === 0 ? { ...item, label: "꺼진 광원" } : item) : mission.sceneGuide;
   const statusLabel = trace?.segments.length === 0 ? "빛길이 시작되지 않음" : trace ? statusText[trace.status] : "";

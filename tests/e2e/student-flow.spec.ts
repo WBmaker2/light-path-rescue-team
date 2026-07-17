@@ -131,7 +131,7 @@ test("꺼진 광원은 빛길을 그리지 않고 0구간 상태를 보여 준�
 test("마지막 종합 미션은 확인 전 장치 역할을 숨긴다", async ({ page }) => {
   await page.goto("/");
   await enterActivities(page);
-  for (const [index, choices] of successfulActivities.slice(0, 5).entries()) await completeActivity(page, choices, false);
+  for (const choices of successfulActivities.slice(0, 5)) await completeActivity(page, choices, false);
 
   const scene = page.locator("figure.scene-card");
   await expect(scene).toContainText("역할은 확인 뒤 공개");
@@ -197,9 +197,13 @@ test("학생용 결과 카드는 다섯 미션의 관찰을 보여 준다", asyn
 test("모바일 도움말에서 업데이트 내역을 연다", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/");
-  await page.getByText("도움말", { exact: true }).click();
-  await page.getByRole("button", { name: "업데이트 내역" }).click();
-  await expect(page.getByRole("dialog", { name: "업데이트 내역" })).toContainText("2026-07-18 · 학생 실사용 개선");
+  const help = page.locator(".mobile-help > summary");
+  expect((await help.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  if (!await help.locator("xpath=..").evaluate((details) => (details as HTMLDetailsElement).open)) await help.click();
+  await page.locator(".mobile-help button").filter({ hasText: "업데이트 내역" }).click();
+  const dialog = page.getByRole("dialog", { name: "업데이트 내역" });
+  await expect(dialog).toContainText("2026-07-18 · 학생 실사용 개선");
+  await expect(dialog).toContainText("2026-07-17 · 접근성 보완");
 });
 
 test("모든 장면 안내와 화면 순서가 미션별 장면을 그대로 설명한다", async ({ page }) => {

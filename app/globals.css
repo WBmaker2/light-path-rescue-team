@@ -23,3 +23,4 @@ main { min-height: calc(100vh - 80px); padding: clamp(24px, 5vw, 68px) clamp(16p
 .source-off circle { fill: #62798e; stroke: #dceaf7; stroke-width: 5; }
 .source-off path { stroke: #fff0a6; stroke-width: 5; stroke-linecap: round; }
 .scene-card figcaption .scene-key { margin: 6px -17px -14px; }
+.mobile-help > summary { display: flex; align-items: center; min-height: 44px; padding: 0 8px; }

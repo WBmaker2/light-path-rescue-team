@@ -4,7 +4,8 @@ type HeaderProps = { completed: number; onInfo: (kind: "teacher" | "model" | "up
 
 export function AppHeader({ completed, onInfo, onRestart }: HeaderProps) {
   return <header className="app-header">
-    <a className="brand" href="#main-content" aria-label="본문으로 건너뛰기"><span aria-hidden="true">✦</span><span>빛길 구조대<small>거울과 렌즈로 빛의 길을 살펴봐요</small></span></a>
+    <a className="skip-link" href="#main-content" onClick={() => document.getElementById("main-content")?.focus()}>본문으로 건너뛰기</a>
+    <div className="brand"><span aria-hidden="true">✦</span><span>빛길 구조대<small>거울과 렌즈로 빛의 길을 살펴봐요</small></span></div>
     <div className="header-actions">
       <span className="completion" aria-label={`본 미션 ${completed}개 완료`}>관찰 {completed}/5</span>
       <button type="button" onClick={() => onInfo("teacher")}>교사용 활동 안내</button>

@@ -39,7 +39,7 @@ export type TraceResult = {
   summary: string;
 };
 
-export type Choice = { id: string; label: string; detail?: string };
+export type Choice = { id: string; label: string; detail?: string; matchingSetupIds?: string[] };
 
 export type MissionDefinition = {
   id: MissionId;

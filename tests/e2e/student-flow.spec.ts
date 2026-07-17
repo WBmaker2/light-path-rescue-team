@@ -80,6 +80,146 @@ test("mobile layout avoids horizontal overflow and keeps the primary button visi
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
+test("mobile starts by showing the scene and its key objects", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/");
+  await enterActivities(page);
+  const scene = page.locator("figure.scene-card");
+  const firstChoice = page.locator("fieldset").first();
+  expect((await scene.boundingBox())?.y).toBeLessThan((await firstChoice.boundingBox())?.y ?? 0);
+  const sceneKey = scene.locator(".scene-key");
+  await expect(sceneKey).toBeVisible();
+  await expect(sceneKey).toContainText("광원");
+  await expect(sceneKey).toContainText("파란 블록");
+  await expect(sceneKey).toContainText("관찰창");
+});
+
+test("위쪽 첫 구멍은 수평 빛길을 가리지 않는다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  await completeActivity(page, successfulActivities[0], false);
+
+  const scene = page.locator("figure.scene-card");
+  await page.getByLabel("첫 구멍을 위로 옮기기", { exact: true }).check();
+  await expect(scene.locator("rect.first-wall").first()).toHaveAttribute("height", "70");
+  await expect(scene.locator("rect.first-wall").nth(1)).toHaveAttribute("y", "250");
+  await expect(scene.locator("rect.second-wall").first()).toHaveAttribute("height", "150");
+  await expect(scene.locator("rect.second-wall").nth(1)).toHaveAttribute("y", "330");
+});
+
+test("꺼진 광원은 빛길을 그리지 않고 0구간 상태를 보여 준다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  const prediction = page.getByLabel("광원이 꺼진 장면", { exact: true });
+  const setup = page.getByLabel("광원이 꺼져 있어요", { exact: true });
+  await prediction.check();
+  await expect(prediction).toBeChecked();
+  await setup.check();
+  await expect(setup).toBeChecked();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  const scene = page.locator("figure.scene-card");
+  await expect(scene.locator(".source-off")).toBeVisible();
+  await expect(scene.locator(".source")).toHaveCount(0);
+  await expect(scene.locator("svg .block")).toHaveCount(0);
+  await expect(scene.locator("figcaption .scene-key")).toContainText("꺼진 광원");
+  await expect(scene.locator("figcaption")).toContainText("빛길이 시작되지 않음 · 광원이 꺼져 있어 빛길이 시작되지 않아요.");
+  await expect(scene.locator("figcaption")).not.toContainText("장애물에서 멈춤");
+  await expect(scene.locator(".light-ray")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" })).toContainText("빛길이 시작되지 않음");
+});
+
+test("모든 장면 안내와 화면 순서가 미션별 장면을 그대로 설명한다", async ({ page }) => {
+  const sceneKeys = [
+    ["광원", "파란 블록", "관찰창"],
+    ["광원", "가림판 구멍", "표적"],
+    ["광원", "거울 슬롯", "표지판"],
+    ["위쪽 물체", "거울 A·B 슬롯", "아래 관찰창"],
+    ["평행한 세 가상 빛줄기", "렌즈 슬롯", "표적"],
+    ["잠망경", "돋보기", "카메라"],
+  ];
+  await page.goto("/");
+  await enterActivities(page);
+
+  for (const [index, expectedKey] of sceneKeys.entries()) {
+    const scene = page.locator("figure.scene-card");
+    const sceneKey = scene.locator("figcaption .scene-key");
+    await expect(sceneKey).toBeVisible();
+    for (const item of expectedKey) await expect(sceneKey).toContainText(item);
+    expect(await page.locator(".workspace-grid").evaluate((workspace) => {
+      const currentScene = workspace.querySelector("figure.scene-card");
+      const currentChoice = workspace.querySelector("fieldset");
+      return currentScene !== null && currentChoice !== null && Boolean(currentScene.compareDocumentPosition(currentChoice) & Node.DOCUMENT_POSITION_FOLLOWING);
+    })).toBe(true);
+    if (index < successfulActivities.length) await completeActivity(page, successfulActivities[index], index === successfulActivities.length - 1);
+  }
+});
+
+test("데스크톱과 모바일에서 장면이 선택보다 먼저 배치된다", async ({ page }) => {
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 320, height: 720 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await enterActivities(page);
+    const scene = page.locator("figure.scene-card");
+    const firstChoice = page.locator("fieldset").first();
+    const sceneBox = await scene.boundingBox();
+    const choiceBox = await firstChoice.boundingBox();
+    if (viewport.width > 820) expect(sceneBox?.x).toBeLessThan(choiceBox?.x ?? 0);
+    else expect(sceneBox?.y).toBeLessThan(choiceBox?.y ?? 0);
+  }
+});
+
+test("경로표는 현재 보이는 빛길 구간만 함께 보여 준다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  await page.getByLabel(successfulActivities[0][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+
+  const record = page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" });
+  const step = page.getByRole("button", { name: "한 단계씩" });
+  await expect(record).toContainText("현재 1/2 구간");
+  await expect(record.locator("ol li")).toHaveCount(1);
+
+  await step.click();
+  await expect(record).toContainText("현재 2/2 구간");
+  await expect(record.locator("ol li")).toHaveCount(2);
+  await expect(step).toBeDisabled();
+});
+
+test("렌즈의 여섯 구간을 한 단계씩 모두 확인한다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  for (const choices of successfulActivities.slice(0, 4)) await completeActivity(page, choices, false);
+  await page.getByLabel(successfulActivities[4][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[4][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+
+  const record = page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" });
+  const step = page.getByRole("button", { name: "한 단계씩" });
+  for (let visible = 1; visible <= 6; visible += 1) {
+    await expect(record).toContainText(`현재 ${visible}/6 구간`);
+    await expect(record.locator("ol li")).toHaveCount(visible);
+    if (visible < 6) await step.click();
+  }
+  await expect(step).toBeDisabled();
+});
+
+test("첫 Tab은 본문 건너뛰기이고 개선 기록을 확인할 수 있다", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  const skipLink = page.getByRole("link", { name: "본문으로 건너뛰기" });
+  await expect(skipLink).toBeVisible();
+  await expect(skipLink).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#main-content$/);
+  await expect(page.locator("main#main-content")).toBeFocused();
+
+  await page.getByRole("button", { name: "업데이트 내역" }).click();
+  const dialog = page.getByRole("dialog", { name: "업데이트 내역" });
+  await expect(dialog).toContainText("2026-07-17 · 학습 흐름 개선");
+  await expect(dialog).toContainText("장면을 먼저");
+});
+
 test("reduced motion reveals the complete path immediately", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

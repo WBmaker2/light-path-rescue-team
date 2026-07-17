@@ -5,7 +5,21 @@ import { dot, normalize, raySegmentIntersection, reflect } from "./geometry";
 
 test("straight corridor distinguishes aligned and blocked paths", () => {
   assert.equal(getTrace("straight-corridor", "aligned").status, "target-hit");
-  assert.equal(getTrace("straight-corridor", "upper-hole").status, "blocked");
+  const upperHole = getTrace("straight-corridor", "upper-hole");
+  assert.equal(upperHole.status, "blocked");
+  assert.equal(upperHole.segments.length, 1);
+  assert.deepEqual(upperHole.segments[0], {
+    from: { x: 100, y: 300 },
+    to: { x: 340, y: 300 },
+    label: "구간 1: 광원에서 가림판",
+  });
+  assert.ok(upperHole.segments.every((segment) => segment.from.y === 300 && segment.to.y === 300));
+});
+
+test("꺼진 광원은 빛길 구간을 만들지 않는다", () => {
+  const dark = getTrace("light-needed-to-see", "dark");
+  assert.equal(dark.status, "blocked");
+  assert.deepEqual(dark.segments, []);
 });
 
 test("mirror and lens missions return stable success and repair feedback", () => {

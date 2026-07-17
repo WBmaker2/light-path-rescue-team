@@ -68,8 +68,12 @@ const twoMirrors: Record<string, PlaneMirror[]> = {
 };
 
 export function getTrace(missionId: MissionId, setupId: string): TraceResult {
-  if (missionId === "light-needed-to-see") return setupId === "visible" ? simpleTrace("target-hit", [source, p(430, 300), p(760, 300)], [event("source", "source", "광원", source), event("block", "object", "파란 블록", p(430, 300)), event("target", "target", "관찰창", p(760, 300))], "빛이 블록과 관찰창까지 이어져 보여요.") : simpleTrace("blocked", [source, p(360, 300)], [event("source", "source", "광원", source), event("block", "block", setupId === "dark" ? "꺼진 광원" : "가림판", p(360, 300))], setupId === "dark" ? "광원이 꺼져 있어 빛길이 시작되지 않아요." : "빛이 블록 앞 가림판에서 멈췄어요.");
-  if (missionId === "straight-corridor") return setupId === "aligned" ? simpleTrace("target-hit", [source, p(350, 300), p(600, 300), p(850, 300)], [event("source", "source", "광원", source), event("gap-a", "object", "첫 번째 구멍", p(350, 300)), event("gap-b", "object", "두 번째 구멍", p(600, 300)), event("target", "target", "표적", p(850, 300))], "빛이 같은 공기 속에서 곧게 나아가 표적에 닿았어요.") : simpleTrace("blocked", [source, p(350, 220)], [event("source", "source", "광원", source), event("block", "block", "가림판", p(350, 220))], "빛이 어긋난 가림판에서 멈췄어요.");
+  if (missionId === "light-needed-to-see") {
+    if (setupId === "visible") return simpleTrace("target-hit", [source, p(430, 300), p(760, 300)], [event("source", "source", "광원", source), event("block", "object", "파란 블록", p(430, 300)), event("target", "target", "관찰창", p(760, 300))], "빛이 블록과 관찰창까지 이어져 보여요.");
+    if (setupId === "dark") return { status: "blocked", events: [event("source-off", "source", "꺼진 광원", source)], segments: [], summary: "광원이 꺼져 있어 빛길이 시작되지 않아요." };
+    return simpleTrace("blocked", [source, p(360, 300)], [event("source", "source", "광원", source), event("block", "block", "가림판", p(360, 300))], "빛이 블록 앞 가림판에서 멈췄어요.");
+  }
+  if (missionId === "straight-corridor") return setupId === "aligned" ? simpleTrace("target-hit", [source, p(350, 300), p(600, 300), p(850, 300)], [event("source", "source", "광원", source), event("gap-a", "object", "첫 번째 구멍", p(350, 300)), event("gap-b", "object", "두 번째 구멍", p(600, 300)), event("target", "target", "표적", p(850, 300))], "빛이 같은 공기 속에서 곧게 나아가 표적에 닿았어요.") : simpleTrace("blocked", [source, p(340, 300)], [event("source", "source", "광원", source), event("block", "block", "가림판", p(340, 300))], "빛이 어긋난 가림판에서 멈췄어요.");
   if (missionId === "single-mirror-corner") return traceMirrors(source, p(1, 0), { id: "target", label: "표지판", center: p(430, 120), radius: 26 }, singleMirrors[setupId] ?? []);
   if (missionId === "two-mirror-viewing-shaft") return traceMirrors(p(210, 110), p(1, 0), { id: "target", label: "아래 관찰창", center: p(120, 460), radius: 26 }, twoMirrors[setupId] ?? []);
   if (missionId === "convex-lens-focus") return lensTrace(setupId);

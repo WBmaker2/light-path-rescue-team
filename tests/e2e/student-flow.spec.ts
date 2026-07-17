@@ -128,6 +128,27 @@ test("꺼진 광원은 빛길을 그리지 않고 0구간 상태를 보여 준�
   await expect(page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" })).toContainText("빛길이 시작되지 않음");
 });
 
+test("마지막 종합 미션은 확인 전 장치 역할을 숨긴다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  for (const [index, choices] of successfulActivities.slice(0, 5).entries()) await completeActivity(page, choices, false);
+
+  const scene = page.locator("figure.scene-card");
+  await expect(scene).toContainText("역할은 확인 뒤 공개");
+  await expect(scene).not.toContainText("평면거울 · 반사");
+  await expect(scene).not.toContainText("볼록렌즈 · 굴절");
+
+  await page.getByLabel(successfulActivities[5][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[5][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  await expect(scene).toContainText("평면거울 · 반사");
+  await expect(scene).toContainText("볼록렌즈 · 굴절");
+  await page.getByRole("button", { name: "전체 경로 보기" }).click();
+  await expect(page.locator(".trace-record")).toContainText("잠망경 → 평면거울 → 반사");
+  await expect(page.locator(".trace-record")).toContainText("돋보기 → 볼록렌즈 → 굴절");
+  await expect(page.locator(".trace-record")).toContainText("카메라 → 볼록렌즈 → 굴절");
+});
+
 test("모든 장면 안내와 화면 순서가 미션별 장면을 그대로 설명한다", async ({ page }) => {
   const sceneKeys = [
     ["광원", "파란 블록", "관찰창"],

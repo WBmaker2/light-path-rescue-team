@@ -56,6 +56,21 @@ function lensTrace(setupId: string): TraceResult {
   return { status, events: [event("source", "source", "세 평행 광선", p(100, 300)), event("lens", "lens", "볼록렌즈", p(lensX, 300)), event("focus", status === "target-hit" ? "target" : "object", status === "target-hit" ? "표적 위치의 초점" : "빛이 모이는 위치", focus)], segments: levels.flatMap((y, index) => [{ from: p(100, y), to: p(lensX, y), label: `구간 ${index * 2 + 1}: ${labels[index]}쪽 평행 광선에서 볼록렌즈` }, { from: p(lensX, y), to: focus, label: `구간 ${index * 2 + 2}: 볼록렌즈에서 초점` }]), summary: status === "target-hit" ? "세 평행 광선이 표적 위치에서 모였어요." : status === "focus-before-target" ? "빛이 표적보다 앞에서 모였어요." : "빛이 표적보다 뒤에서 모여요." };
 }
 
+function deviceTrace(setupId: string): TraceResult {
+  if (setupId === "correct-match") return {
+    status: "target-hit",
+    events: [event("periscope", "object", "잠망경", p(185, 290)), event("magnifier", "object", "돋보기", p(500, 290)), event("camera", "object", "카메라", p(815, 290))],
+    segments: [
+      { from: p(130, 290), to: p(240, 290), label: "잠망경 → 평면거울 → 반사" },
+      { from: p(445, 290), to: p(555, 290), label: "돋보기 → 볼록렌즈 → 굴절" },
+      { from: p(760, 290), to: p(870, 290), label: "카메라 → 볼록렌즈 → 굴절" },
+    ],
+    summary: "세 장치와 빛의 성질을 알맞게 연결했어요.",
+  };
+  const selectedRole = setupId === "all-mirror" ? "평면거울 역할" : "볼록렌즈 역할";
+  return simpleTrace("blocked", [source, p(420, 300)], [event("source", "source", "장치 카드", source), event("block", "block", "맞지 않는 연결", p(420, 300))], `세 장치를 모두 ${selectedRole}로 연결했어요. 장치마다 알맞은 역할을 다시 살펴봐요.`);
+}
+
 const singleMirrors: Record<string, PlaneMirror[]> = {
   "slot-a-down": [{ id: "평면거울 A", center: p(430, 300), length: 110, orientation: "slash", frontNormal: p(-1, -1) }],
   "slot-a-up": [{ id: "평면거울 A", center: p(430, 300), length: 110, orientation: "backslash", frontNormal: p(-1, 1) }],
@@ -77,5 +92,5 @@ export function getTrace(missionId: MissionId, setupId: string): TraceResult {
   if (missionId === "single-mirror-corner") return traceMirrors(source, p(1, 0), { id: "target", label: "표지판", center: p(430, 120), radius: 26 }, singleMirrors[setupId] ?? []);
   if (missionId === "two-mirror-viewing-shaft") return traceMirrors(p(210, 110), p(1, 0), { id: "target", label: "아래 관찰창", center: p(120, 460), radius: 26 }, twoMirrors[setupId] ?? []);
   if (missionId === "convex-lens-focus") return lensTrace(setupId);
-  return setupId === "correct-match" ? simpleTrace("target-hit", [source, p(400, 220), p(700, 300)], [event("source", "source", "장치 카드", source), event("mirror", "mirror", "잠망경의 거울", p(400, 220), { orientation: "slash", side: "front" }), event("target", "target", "빛의 성질 연결", p(700, 300))], "장치와 빛의 성질을 알맞게 연결했어요.") : simpleTrace("blocked", [source, p(420, 300)], [event("source", "source", "장치 카드", source), event("block", "block", "맞지 않는 연결", p(420, 300))], "장치의 핵심 역할을 다시 살펴봐요.");
+  return deviceTrace(setupId);
 }

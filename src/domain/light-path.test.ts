@@ -31,6 +31,15 @@ test("mirror and lens missions return stable success and repair feedback", () =>
   assert.equal(getTrace("convex-lens-focus", "middle").segments.length, 6);
 });
 
+test("correct device match gives each device its own relationship segment", () => {
+  const result = getTrace("device-use-match", "correct-match");
+  assert.deepEqual(result.segments.map((segment) => segment.label), [
+    "잠망경 → 평면거울 → 반사",
+    "돋보기 → 볼록렌즈 → 굴절",
+    "카메라 → 볼록렌즈 → 굴절",
+  ]);
+});
+
 test("finite mirror geometry reflects deterministically without non-finite values", () => {
   const hit = raySegmentIntersection(
     { origin: { x: 0, y: 0 }, direction: normalize({ x: 1, y: 0 }) },

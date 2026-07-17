@@ -7,7 +7,7 @@ test("one guide and five missions carry required model and safety language", () 
   assert.deepEqual(MISSIONS.map((mission) => mission.id), [
     "light-needed-to-see", "straight-corridor", "single-mirror-corner", "two-mirror-viewing-shaft", "convex-lens-focus", "device-use-match",
   ]);
-  assert.ok(MISSIONS.filter((mission) => mission.id !== "convex-lens-focus").every((mission) => mission.modelNote.includes("가상")));
+  assert.ok(MISSIONS.every((mission) => !mission.modelNote.includes("가상")));
   assert.ok(MISSIONS.some((mission) => mission.safetyNote.includes("햇빛")));
 });
 
@@ -29,7 +29,7 @@ test("mirror setup labels use arrows that match their actual orientations", () =
 });
 
 test("every mission offers clear scene guidance and student-friendly copy", () => {
-  const banned = ["검수된", "텍스트 경로표", "직진와", "굴절와", "쓰임와"];
+  const banned = ["검수된", "텍스트 경로표", "가상 빛줄기", "가상 표시", "가상 빛길", "가상 자료", "직진와", "굴절와", "쓰임와"];
   for (const mission of MISSIONS) {
     assert.equal(mission.sceneGuide.length, 3);
     assert.ok(mission.sceneGuide.every((item) => item.hint !== "장면에서 찾아봐요."));

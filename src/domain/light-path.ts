@@ -28,7 +28,7 @@ function traceMirrors(start: Point, direction: Vector, target: Target, mirrors: 
     if (targetHit && (!mirrorHit || targetHit.distance < mirrorHit.distance)) {
       segments.push({ from: ray.origin, to: targetHit.point, label: segmentLabel(segments.length + 1, events.at(-1)!.label, target.label) });
       events.push(event(target.id, "target", target.label, targetHit.point));
-      return { status: "target-hit", events, segments, summary: `${events.filter((item) => item.kind === "mirror").length}번 반사한 가상 빛길이 ${target.label}에 닿았어요.` };
+      return { status: "target-hit", events, segments, summary: `${events.filter((item) => item.kind === "mirror").length}번 반사한 화면 속 빛길이 ${target.label}에 닿았어요.` };
     }
     if (!mirrorHit) break;
     const side = dot(ray.direction, normalize(mirrorHit.mirror.frontNormal)) < -0.00001 ? "front" : "back";
@@ -53,7 +53,7 @@ function lensTrace(setupId: string): TraceResult {
   const status: TraceStatus = focus.x === 700 ? "target-hit" : focus.x < 700 ? "focus-before-target" : "focus-after-target";
   const levels = [180, 300, 420];
   const labels = ["위", "가운데", "아래"];
-  return { status, events: [event("source", "source", "세 평행 광선", p(100, 300)), event("lens", "lens", "볼록렌즈", p(lensX, 300)), event("focus", status === "target-hit" ? "target" : "object", status === "target-hit" ? "표적 위치의 초점" : "빛이 모이는 위치", focus)], segments: levels.flatMap((y, index) => [{ from: p(100, y), to: p(lensX, y), label: `구간 ${index * 2 + 1}: ${labels[index]}쪽 평행 광선에서 볼록렌즈` }, { from: p(lensX, y), to: focus, label: `구간 ${index * 2 + 2}: 볼록렌즈에서 초점` }]), summary: status === "target-hit" ? "나란히 들어온 세 빛줄기가 표적 위치에서 모였어요." : status === "focus-before-target" ? "빛이 표적보다 앞에서 모였어요." : "빛이 표적보다 뒤에서 모여요." };
+  return { status, events: [event("source", "source", "나란히 들어오는 세 빛줄기", p(100, 300)), event("lens", "lens", "볼록렌즈", p(lensX, 300)), event("focus", status === "target-hit" ? "target" : "object", status === "target-hit" ? "표적 위치의 초점" : "빛이 모이는 위치", focus)], segments: levels.flatMap((y, index) => [{ from: p(100, y), to: p(lensX, y), label: `구간 ${index * 2 + 1}: ${labels[index]}쪽 빛줄기에서 볼록렌즈` }, { from: p(lensX, y), to: focus, label: `구간 ${index * 2 + 2}: 볼록렌즈에서 초점` }]), summary: status === "target-hit" ? "나란히 들어온 세 빛줄기가 표적 위치에서 모였어요." : status === "focus-before-target" ? "빛이 표적보다 앞에서 모였어요." : "빛이 표적보다 뒤에서 모여요." };
 }
 
 function deviceTrace(setupId: string): TraceResult {

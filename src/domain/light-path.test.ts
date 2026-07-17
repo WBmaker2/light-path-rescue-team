@@ -38,6 +38,13 @@ test("lens success uses a student-friendly summary", () => {
   );
 });
 
+test("trace records use screen-friendly light-path wording", () => {
+  const mirrorTrace = getTrace("single-mirror-corner", "slot-a-down");
+  const lensTrace = getTrace("convex-lens-focus", "middle");
+  assert.equal(mirrorTrace.summary, "1번 반사한 화면 속 빛길이 표지판에 닿았어요.");
+  assert.ok([...mirrorTrace.events, ...mirrorTrace.segments, ...lensTrace.events, ...lensTrace.segments].every((item) => !item.label.includes("가상")));
+});
+
 test("correct device match gives each device its own relationship segment", () => {
   const result = getTrace("device-use-match", "correct-match");
   assert.deepEqual(result.segments.map((segment) => segment.label), [

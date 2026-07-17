@@ -67,6 +67,9 @@ test("시작과 안전 안내는 쉬운 학생 문구를 쓴다", async ({ page 
   await page.getByLabel("광원이 꺼진 장면", { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
   await expect(page.locator(".comparison")).toHaveText("예상과 관찰이 달랐어요. 빛이 멈추거나 방향을 바꾼 곳을 보고 다시 생각해 봐요.");
+  await page.getByLabel("광원이 꺼져 있어요", { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  await expect(page.locator(".hint")).toHaveText("세 번 확인했어요. 빛길이 시작되지 않았어요. 광원이 켜져 있는지 확인하고 두 보기를 비교해 한 가지를 고쳐 다시 확인해요.");
 });
 
 test("information dialog traps focus, closes with Escape, and restores its trigger", async ({ page }) => {

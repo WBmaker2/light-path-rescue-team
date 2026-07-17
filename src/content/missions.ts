@@ -1,7 +1,7 @@
 import type { MissionDefinition } from "../domain/types";
 import { MIRROR_ORIENTATION_LABELS } from "../domain/mirror-labels";
 
-const commonModel = "화면의 노란 선은 빛의 진행 방향을 이해하기 위한 가상 표시예요.";
+const commonModel = "화면의 노란 선은 빛이 나아가는 방향을 보여 주는 선이에요.";
 const safety = "실제 거울과 렌즈 실험은 선생님의 안내에 따라 안전하게 해요. 강한 빛이나 햇빛을 눈에 비추거나 렌즈로 모으지 않아요.";
 
 export const MISSIONS: MissionDefinition[] = [
@@ -23,7 +23,7 @@ export const MISSIONS: MissionDefinition[] = [
     setups: [{ id: "aligned", label: "두 구멍을 가운데로 맞추기" }, { id: "upper-hole", label: "첫 구멍을 위로 옮기기" }],
     predictions: [{ id: "straight", label: "빛이 곧게 통과할 거예요", matchingSetupIds: ["aligned"] }, { id: "up", label: "빛이 위로 휠 거예요" }, { id: "down", label: "빛이 아래로 휠 거예요" }],
     explanations: [{ id: "straight", label: "같은 공기 속에서 빛길을 곧게 나타내어 표적에 닿았어요." }, { id: "avoid", label: "빛이 가림판을 피해 스스로 휘었어요." }, { id: "create", label: "가림판이 빛을 만들었어요." }],
-    correctExplanationId: "straight", successSetup: "aligned", modelNote: "이 가상 모형은 같은 공기 속에서 빛이 곧게 나아가는 장면을 단순하게 나타내요.", safetyNote: safety,
+    correctExplanationId: "straight", successSetup: "aligned", modelNote: "이 화면은 같은 공기 속에서 빛이 곧게 나아가는 장면을 단순하게 보여 줘요.", safetyNote: safety,
   },
   {
     id: "single-mirror-corner", title: "미션 2 · 모퉁이 표지판", property: "반사",
@@ -37,7 +37,7 @@ export const MISSIONS: MissionDefinition[] = [
   },
   {
     id: "two-mirror-viewing-shaft", title: "미션 3 · 두 층 관찰 통로", property: "반사",
-    request: "위쪽 물체에서 온 가상 빛길을 아래 관찰창까지 이어 봐요.", setupLabel: "두 거울의 방향",
+    request: "위쪽 물체에서 온 화면 속 빛길을 아래 관찰창까지 이어 봐요.", setupLabel: "두 거울의 방향",
     conceptHelp: "반사는 거울에서 빛의 방향이 바뀌는 모습이에요.",
     sceneGuide: [{ label: "거울 A", hint: "첫 번째로 방향이 바뀌는 자리예요." }, { label: "거울 B", hint: "두 번째로 방향이 바뀌는 자리예요." }, { label: "아래 관찰창", hint: "두 번 방향이 바뀐 빛이 닿는 곳이에요." }],
     setups: [{ id: "both-turn", label: `거울 A ${MIRROR_ORIENTATION_LABELS.backslash} · 거울 B ${MIRROR_ORIENTATION_LABELS.slash}`, detail: "↘ 다음 ↗ 순서로 거울의 기울기를 살펴봐요." }, { id: "first-only", label: `거울 A ${MIRROR_ORIENTATION_LABELS.backslash}만 선택`, detail: "첫 거울만 선택하면 두 번째 방향 전환은 없어요." }, { id: "wrong-turn", label: `거울 A ${MIRROR_ORIENTATION_LABELS.slash} · 거울 B ${MIRROR_ORIENTATION_LABELS.backslash}`, detail: "↗ 다음 ↘ 순서로 거울의 기울기를 살펴봐요." }],
@@ -47,7 +47,7 @@ export const MISSIONS: MissionDefinition[] = [
   },
   {
     id: "convex-lens-focus", title: "미션 4 · 초점 구조 신호기", property: "굴절",
-    request: "평행하게 들어오는 세 가상 빛줄기가 표적 위치에서 모이게 해요.", setupLabel: "볼록렌즈 슬롯",
+    request: "나란히 들어오는 세 빛줄기가 표적 위치에서 모이게 해요.", setupLabel: "볼록렌즈 슬롯",
     conceptHelp: "굴절은 렌즈를 지나며 빛의 방향이 바뀌는 모습이에요. 초점은 빛이 한곳에 모이는 곳이에요.",
     sceneGuide: [{ label: "평행한 세 빛줄기", hint: "나란히 들어오는 세 빛줄기예요." }, { label: "렌즈 슬롯", hint: "렌즈 뒤 어느 곳에서 빛이 모이는지 비교해요." }, { label: "표적", hint: "빛이 모이는 위치와 비교할 곳이에요." }],
     setups: [{ id: "left", label: "렌즈를 왼쪽 슬롯에 놓기" }, { id: "middle", label: "렌즈를 가운데 슬롯에 놓기" }, { id: "right", label: "렌즈를 오른쪽 슬롯에 놓기" }],
@@ -63,7 +63,7 @@ export const MISSIONS: MissionDefinition[] = [
     setups: [{ id: "correct-match", label: "잠망경: 평면거울 반사 · 돋보기/카메라: 볼록렌즈 굴절" }, { id: "all-mirror", label: "세 장치 모두를 평면거울 반사로 연결" }, { id: "all-lens", label: "세 장치 모두를 볼록렌즈 굴절로 연결" }],
     predictions: [{ id: "uses", label: "장치마다 쓰는 빛의 성질이 다를 거예요", matchingSetupIds: ["correct-match"] }, { id: "same", label: "모든 장치가 같은 방식일 거예요" }, { id: "none", label: "빛의 성질과 관계없을 거예요" }],
     explanations: [{ id: "uses", label: "잠망경은 거울의 반사, 돋보기와 카메라는 렌즈의 쓰임과 연결해 볼 수 있어요." }, { id: "same", label: "거울과 렌즈는 빛길을 똑같이 바꿔요." }, { id: "ignore", label: "장치의 빛길은 살펴볼 필요가 없어요." }],
-    correctExplanationId: "uses", successSetup: "correct-match", modelNote: "장치 카드는 핵심 역할만 단순하게 나타낸 가상 자료예요.", safetyNote: safety,
+    correctExplanationId: "uses", successSetup: "correct-match", modelNote: "장치 카드는 이 화면에서 보여 주는 자료예요.", safetyNote: safety,
   },
 ];
 

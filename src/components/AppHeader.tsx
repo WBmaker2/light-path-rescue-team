@@ -13,5 +13,6 @@ export function AppHeader({ completed, onInfo, onRestart }: HeaderProps) {
       <button type="button" onClick={() => onInfo("updates")}>업데이트 내역</button>
       <button className="quiet-button" type="button" onClick={onRestart}>처음부터</button>
     </div>
+    <details className="mobile-help"><summary>도움말</summary><button type="button" onClick={() => onInfo("teacher")}>선생님용</button><button type="button" onClick={() => onInfo("model")}>모형과 안전</button><button type="button" onClick={() => onInfo("updates")}>업데이트 내역</button></details>
   </header>;
 }

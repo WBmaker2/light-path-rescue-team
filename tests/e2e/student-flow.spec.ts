@@ -31,7 +31,7 @@ async function completeActivity(page: Page, choices: readonly [string, string, s
   await page.getByLabel(choices[0], { exact: true }).check();
   await page.getByLabel(choices[1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
-  await expect(page.getByText("빛길 순서")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "빛길 순서" })).toBeVisible();
   await page.getByLabel(choices[2], { exact: true }).check();
   await page.getByRole("button", { name: isLast ? "관찰 기록 보기" : "다음 활동으로" }).click();
 }
@@ -44,10 +44,10 @@ test("student completes the guide and five missions with a five-mission summary"
   await page.goto("/");
   await enterActivities(page);
   for (const [index, choices] of successfulActivities.entries()) await completeActivity(page, choices, index === successfulActivities.length - 1);
-  const table = page.getByRole("table", { name: "미션별 관찰 기록" });
-  await expect(table).toBeVisible();
-  await expect(table.getByRole("row")).toHaveCount(6);
-  await expect(table).not.toContainText("빛이 있어야 보여요");
+  const list = page.getByRole("list", { name: "미션별 관찰 기록" });
+  await expect(list).toBeVisible();
+  await expect(list.getByRole("listitem")).toHaveCount(5);
+  await expect(list).not.toContainText("빛이 있어야 보여요");
 });
 
 test("information dialog traps focus, closes with Escape, and restores its trigger", async ({ page }) => {
@@ -75,8 +75,8 @@ test("mobile layout avoids horizontal overflow and keeps the primary button visi
   await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
   await expect(page.getByRole("button", { name: "빛길 확인" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "한 단계씩" })).toBeVisible();
-  await expect(page.getByText("빛길 순서")).toBeVisible();
+  await expect(page.getByRole("button", { name: "다음 빛길 보기" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "빛길 순서" })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
@@ -125,7 +125,7 @@ test("꺼진 광원은 빛길을 그리지 않고 0구간 상태를 보여 준�
   await expect(scene.locator("figcaption")).toContainText("빛길이 시작되지 않음 · 광원이 꺼져 있어 빛길이 시작되지 않아요.");
   await expect(scene.locator("figcaption")).not.toContainText("장애물에서 멈춤");
   await expect(scene.locator(".light-ray")).toHaveCount(0);
-  await expect(page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" })).toContainText("빛길이 시작되지 않음");
+  await expect(page.getByRole("region", { name: "빛길 순서" })).toContainText("빛길이 시작되지 않음");
 });
 
 test("마지막 종합 미션은 확인 전 장치 역할을 숨긴다", async ({ page }) => {
@@ -143,7 +143,7 @@ test("마지막 종합 미션은 확인 전 장치 역할을 숨긴다", async (
   await page.getByRole("button", { name: "빛길 확인" }).click();
   await expect(scene).toContainText("평면거울 · 반사");
   await expect(scene).toContainText("볼록렌즈 · 굴절");
-  await page.getByRole("button", { name: "전체 경로 보기" }).click();
+  await page.getByRole("button", { name: "빛길 한 번에 보기" }).click();
   await expect(page.locator(".trace-record")).toContainText("잠망경 → 평면거울 → 반사");
   await expect(page.locator(".trace-record")).toContainText("돋보기 → 볼록렌즈 → 굴절");
   await expect(page.locator(".trace-record")).toContainText("카메라 → 볼록렌즈 → 굴절");
@@ -176,13 +176,39 @@ test("모바일 관찰은 결과 그림에 초점을 맞추고 기록 링크를 
   await expect(scene.getByRole("link", { name: "빛길 기록으로 가기" })).toBeVisible();
 });
 
+test("진행 표시는 현재 활동과 학생용 설명 순서를 알려 준다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  await expect(page.getByRole("progressbar", { name: "활동 진행" })).toHaveAttribute("aria-valuemax", "6");
+  await page.getByLabel(successfulActivities[0][0], { exact: true }).check();
+  await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
+  await page.getByRole("button", { name: "빛길 확인" }).click();
+  await expect(page.getByRole("heading", { name: "3. 본 것을 바탕으로 설명하기" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "빛길 순서" })).toBeVisible();
+});
+
+test("학생용 결과 카드는 다섯 미션의 관찰을 보여 준다", async ({ page }) => {
+  await page.goto("/");
+  await enterActivities(page);
+  for (const [index, choices] of successfulActivities.entries()) await completeActivity(page, choices, index === successfulActivities.length - 1);
+  await expect(page.getByRole("list", { name: "미션별 관찰 기록" }).getByRole("listitem")).toHaveCount(5);
+});
+
+test("모바일 도움말에서 업데이트 내역을 연다", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/");
+  await page.getByText("도움말", { exact: true }).click();
+  await page.getByRole("button", { name: "업데이트 내역" }).click();
+  await expect(page.getByRole("dialog", { name: "업데이트 내역" })).toContainText("2026-07-18 · 학생 실사용 개선");
+});
+
 test("모든 장면 안내와 화면 순서가 미션별 장면을 그대로 설명한다", async ({ page }) => {
   const sceneKeys = [
     ["광원", "파란 블록", "관찰창"],
-    ["광원", "가림판 구멍", "표적"],
-    ["광원", "거울 슬롯", "표지판"],
-    ["위쪽 물체", "거울 A·B 슬롯", "아래 관찰창"],
-    ["평행한 세 가상 빛줄기", "렌즈 슬롯", "표적"],
+    ["첫 가림판 구멍", "둘째 가림판 구멍", "표적"],
+    ["광원", "거울 자리", "표지판"],
+    ["거울 A", "거울 B", "아래 관찰창"],
+    ["평행한 세 빛줄기", "렌즈 슬롯", "표적"],
     ["잠망경", "돋보기", "카메라"],
   ];
   await page.goto("/");
@@ -223,8 +249,8 @@ test("경로표는 현재 보이는 빛길 구간만 함께 보여 준다", asyn
   await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
 
-  const record = page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" });
-  const step = page.getByRole("button", { name: "한 단계씩" });
+  const record = page.getByRole("region", { name: "빛길 순서" });
+  const step = page.getByRole("button", { name: "다음 빛길 보기" });
   await expect(record).toContainText("현재 1/2 구간");
   await expect(record.locator("ol li")).toHaveCount(1);
 
@@ -242,8 +268,8 @@ test("렌즈의 여섯 구간을 한 단계씩 모두 확인한다", async ({ pa
   await page.getByLabel(successfulActivities[4][1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
 
-  const record = page.getByRole("region", { name: "관찰 기록 · 텍스트 경로표" });
-  const step = page.getByRole("button", { name: "한 단계씩" });
+  const record = page.getByRole("region", { name: "빛길 순서" });
+  const step = page.getByRole("button", { name: "다음 빛길 보기" });
   for (let visible = 1; visible <= 6; visible += 1) {
     await expect(record).toContainText(`현재 ${visible}/6 구간`);
     await expect(record.locator("ol li")).toHaveCount(visible);
@@ -289,7 +315,7 @@ test("start and mission surfaces have no serious axe violations or external requ
   await enterActivities(page);
   for (const result of [await axeResults(page)]) expect(result.violations.filter((item) => ["serious", "critical"].includes(item.impact ?? ""))).toEqual([]);
   for (const [index, choices] of successfulActivities.entries()) await completeActivity(page, choices, index === successfulActivities.length - 1);
-  await expect(page.getByRole("table", { name: "미션별 관찰 기록" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "미션별 관찰 기록" })).toBeVisible();
   for (const result of [await axeResults(page)]) expect(result.violations.filter((item) => ["serious", "critical"].includes(item.impact ?? ""))).toEqual([]);
   expect([...externalOrigins]).toEqual([]);
 });

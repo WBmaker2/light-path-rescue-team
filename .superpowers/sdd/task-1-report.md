@@ -22,3 +22,21 @@
 ## Diff 검토
 
 `git diff --check`가 빈 결과로 통과했습니다. 변경은 Task 1에 지정된 타입, 미션 콘텐츠, 콘텐츠 테스트, 그림 컴포넌트와 이 보고서에만 한정했고, 코드 파일은 모두 500줄 미만입니다.
+
+## 리뷰 수정 · 2026-07-18
+
+### RED
+
+명령: `node --import tsx --test src/components/LightPathScene.test.tsx src/content/missions.test.ts`
+
+결과: 그림 안내 렌더링 테스트가 실패했습니다. `<strong>광원</strong>`과 힌트 `<span>` 사이에 학생이 읽을 구분자 `: `가 없었기 때문입니다. 같은 실행에서 여섯 미션의 승인된 장면 안내 라벨과 핵심 힌트를 고정하는 회귀 검증을 추가했습니다.
+
+### 구현과 GREEN
+
+- `LightPathScene`이 라벨과 힌트 사이에 `: `를 렌더링하도록 고쳤습니다.
+- 여섯 활동의 세 가지 안내 라벨과 힌트를 정확히 비교하는 회귀 테스트를 추가했습니다.
+- SVG 제목을 하나의 문자열로 만들어 기존 React 서버 렌더 경고도 제거했습니다.
+
+명령: `node --import tsx --test src/components/LightPathScene.test.tsx src/content/missions.test.ts && npm run build`
+
+결과: 관련 테스트 5개와 빌드가 모두 통과했습니다. 빌드의 Node `punycode` 사용 중단 경고와 Vinext 정적 분류 안내는 비차단 상태입니다.

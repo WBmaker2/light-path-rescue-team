@@ -45,4 +45,7 @@ next-env.d.ts
 /outputs/
 /work/
 /.gstack/
+/dist-pages/
+/.playwright-cli/
+/.gstack/
 /.superpowers/

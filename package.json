@@ -8,12 +8,13 @@
   "scripts": {
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "build:pages": "vite build --config vite.pages.config.ts",
     "typecheck": "tsc --noEmit",
     "check:runtime-network": "node scripts/check-runtime-network.mjs",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "tsx --test src/domain/*.test.ts src/content/*.test.ts && npm run build && node --test tests/rendered-html.test.mjs",
     "test:e2e": "playwright test",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern dist-pages --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

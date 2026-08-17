@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import type { TraceResult } from "../domain/types";
 import { repairHintFor } from "./MissionWorkspace";
@@ -14,4 +15,19 @@ test("repair hints identify every failed light-path result", () => {
   assert.match(repairHintFor(trace("out-of-bounds"), 1), /빛길이 표적과 다른 방향으로 갔어요/);
   assert.match(repairHintFor(trace("focus-before-target"), 2), /빛이 표적보다 앞에서 모였어요.*한 가지를 고쳐/);
   assert.match(repairHintFor(trace("focus-after-target"), 3), /빛이 표적보다 뒤에서 모였어요.*두 보기를 비교/);
+});
+
+test("student action highlighting has one scene action and a repair-only failure phase", () => {
+  const source = fs.readFileSync(new URL("./MissionWorkspace.tsx", import.meta.url), "utf8");
+  assert.match(source, /target === "장면 찾기" \? ""/);
+  assert.match(source, /!canExplain \? "수정"/);
+  assert.match(source, /disabled=\{!canExplain\}/);
+  assert.match(source, /secondary-action gi-pulse/);
+  assert.match(source, /setSetup\(null\); setTrace\(null\); setVisibleSegments\(0\); setExplanation\(null\); setFeedback\(""\)/);
+});
+
+test("Pages entry keeps the current update note", () => {
+  const source = fs.readFileSync(new URL("../../pages/main.tsx", import.meta.url), "utf8");
+  assert.match(source, /2026-08-17 · 정식 원격 반영/);
+  assert.match(source, /이렇게 풀어요/);
 });

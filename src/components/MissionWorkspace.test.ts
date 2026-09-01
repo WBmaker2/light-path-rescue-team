@@ -19,7 +19,7 @@ test("repair hints identify every failed light-path result", () => {
 
 test("student action highlighting has one scene action and a repair-only failure phase", () => {
   const source = fs.readFileSync(new URL("./MissionWorkspace.tsx", import.meta.url), "utf8");
-  assert.match(source, /target === "장면 찾기" \? ""/);
+  assert.match(source, /STEP_LABELS = \["장면 찾기", "예상", "장치", "빛길 확인"/);
   assert.match(source, /!canExplain \? "수정"/);
   assert.match(source, /disabled=\{!canExplain\}/);
   assert.match(source, /secondary-action gi-pulse/);

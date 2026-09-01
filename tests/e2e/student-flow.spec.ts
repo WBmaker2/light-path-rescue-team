@@ -229,7 +229,7 @@ test("진행 표시는 현재 활동과 학생용 설명 순서를 알려 준다
   await page.getByLabel(successfulActivities[0][0], { exact: true }).check();
   await page.getByLabel(successfulActivities[0][1], { exact: true }).check();
   await page.getByRole("button", { name: "빛길 확인" }).click();
-  await expect(page.getByRole("heading", { name: "4. 본 것을 바탕으로 설명하기" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "4. 본 것을 설명해요" })).toBeVisible();
   await expect(page.getByRole("region", { name: "빛길 순서" })).toBeVisible();
 });
 

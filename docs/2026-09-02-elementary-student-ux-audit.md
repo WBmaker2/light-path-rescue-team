@@ -22,4 +22,11 @@
 - 시스템 Chrome 전체 흐름: 5개 미션 완료, 오답 회복, 320/375/1280 CTA 노출, 가로 넘침 없음, 콘솔 오류·실패 요청 없음
 - 기본 `npm run test:e2e`: bundled Chromium 실행 파일 부재로 시작 단계에서 차단됨
 
+## 배포 확인
+
+- 커밋: `f149dc30ed7a7175881868805c2489b7d41a2d38`
+- Pages workflow: [33571979902](https://github.com/WBmaker2/light-path-rescue-team/actions/runs/33571979902) 성공
+- 공개 learner 경로: [https://wbmaker2.github.io/light-path-rescue-team/](https://wbmaker2.github.io/light-path-rescue-team/)
+- 공개 HTML HTTP 200, 빌드된 JS/CSS 자산 HTTP 200, 320px CTA 노출·가로 넘침 없음, 콘솔 오류 0 확인
+
 이 기록은 실제 학생 인터뷰가 아니라 브라우저 기반 learner-flow 점검 결과입니다. 광학 경로의 정확한 위치 관계를 위해 기존 SVG 도식을 유지했으며, 장식용 생성 이미지는 추가하지 않았습니다.
